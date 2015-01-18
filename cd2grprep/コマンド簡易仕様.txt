@@ -1,0 +1,89 @@
+保留回数救済プログラム簡易仕様
+　　　　　　　　　　　　岩通ソフト）奥野
+
+■ 機能
+　I3_IC.dbo.CallDetailテーブルを解析し、解析内容（日時、ワークグループ名、ユーザID、保留回数）
+　をCSVファイルに出力する。
+　また、I3_IC.dbo.IAgentQueueStatsテーブルへのUPDATE SQLを出力する。
+　読み取られた１行当たりの情報はlog4netによりログファイルに出力する。
+
+■ プログラム呼出し形式
+
+　HoldCounter.exe 読取開始日時 読取終了日時 [出力中間ファイル名 出力SQLファイル名]
+　
+　読取開始日時　　　：CallDetailテーブルを読み取る範囲指定（開始日時）
+　　　　　　　　　　　yyyyMMddHHmmss形式で指定
+　　　　　　　　　　　対象 >= 読み取り開始日時
+　読取終了日時　　　：CallDetailテーブルを読み取る範囲指定（終了日時） 
+　　　　　　　　　　　yyyyMMddHHmmss形式で指定
+　　　　　　　　　　　対象 < 読み取り終了日時
+　出力中間ファイル名：中間ファイルの保存先を指定
+　　　　　　　　　　　省略した場合はカレントディレクトリに「AnalysisResult_【開始日時】-【終了日時】_【実行日時】.csv」で出力。
+　出力SQLファイル名 ：SQLファイルの保存先を指定
+　　　　　　　　　　　省略した場合はカレントディレクトリに「UpdateAgentQueueStats_【開始日時】-【終了日時】_【実行日時】.sql」で出力。
+　
+　※ 日時はGMTに変換されてI3TimeStampGmtと比較される
+
+　実行例）2014年1月分のデータを解析する場合
+　　　　> HoldCounter.exe 20140101000000 20140201000000
+
+■ 入出力
+　★：初期設定が必要なもの
+
+　(IN)
+　・設定ファイル（HoldCounter.exe.config）
+　　- 動作設定指定値
+　　　★ DBConnectString: DB接続文字列
+　　　　　　　　　　　　　指定形式は以下のとおり
+　　　　　　　　　　　　　Data Source=【DBサーバ】;Initial Catalog=【DB名】;User Id=【ユーザID】;Password=【パスワード】;
+　　　DBTimeOut　　　: コマンド実行タイムアウト（秒）
+　　- プログラム定数
+　　　CallDetailのSELECT文（基本的に変更しない）
+　　　IAgentQueueStatsのUPDATE文フォーマット（基本的に変更しない）
+　　- ログ指定値
+　　　各種log4net設定
+
+　(OUT)
+　・トレースログ
+　　プログラムの動作内容とCallDetail1行当たりの解析内容を出力する。
+　　出力フォーマットは設定ファイルの「ログ指定値」にて設定。
+　・中間ファイル
+　　CallDetailテーブルの解析内容を出力する。
+　　出力内容は以下のとおり。
+　　　- 日時（集計日時）
+　　　- ワークグループ名（*もあり）
+　　　- ユーザID
+　　　- 保留回数
+　　1行がIAgentQueueStatsの1レコードに該当する。
+　・SQLファイル
+　　IAgentQueueStatsへの修正用SQLを出力する。
+　　このSQLはSQL Server Management Studioにより手動で実行され、IAgentQueueStatsに
+　　適用されることを想定。
+　　
+　　※ 各ファイルの文字コードはSJISとする。
+
+備考） CallEventLog解析ロジック
+　CallEventLogを[0D0A]の位置で改行し、上から1行ずつフェッチしていき、
+　内容によって以下のロジックで処理を行う。
+　
+　・「Entered Workgroup」が出現
+　　→ ワークグループ名を一時的に保持する
+　　　 一時的に保持していたユーザIDが存在すればクリアする。
+　・「Sent to user」が出現
+　　→ ユーザIDを一時的に保持する
+　・「Connected」が出現
+　　→ 一時保存したユーザIDを接続済としてマークする
+　・「Held」が出現
+　　→ 一時的に保持していたユーザIDとワークグループが存在し、
+　　　 ユーザIDが接続済としてマークされている場合、
+　　　 日時、ワークグループ名、ユーザIDを集計対象としてメモリに保存する。
+　　　 
+　※ 日時はConnectedDateから日付を取得し、CallEventLogカラム内のHeldの時刻を使用する。
+　　 
+　※ 日をまたいだデータ（正確にはDB読み取る日時範囲を跨いだデータ）が存在する可能性が
+　　あるため、CustomValue1は既存カラムに加算してUPDATEする。
+　　 そのため、一度指定した期間で再実行するとCustomValue1の値がずれるので注意。
+　　
+　※ 保留回数が0回だった場合（コールがなかった場合や、CallDetailから取得したデータが
+　　集計対象にならなかった場合）に、IAgentQueueStatsのCustomValue1を0にUPDATEする必要
+　　はない。（カラムの初期値が0のため）

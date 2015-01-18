@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="cd2grprep.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DBConnectString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Data Source=172.26.97.68;Initial Catalog=I3_IC;User Id=sa;Password=Iwatsu102;</Value>
+    </Setting>
+    <Setting Name="SelectCallDetailSql" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT CallEventLog,ConnectedDate,CallId,CallDurationSeconds,HoldDurationSeconds,CustomNum3 FROM dbo.CallDetail WITH (NOLOCK) WHERE I3TimeStampGmt &gt;= @start AND I3TimeStampGmt &lt; @end</Value>
+    </Setting>
+    <Setting Name="UpdateIAgentQueueStatsAll" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UPDATE dbo.IAgentQueueStats SET CustomValue1 = CustomValue1 + {3} WHERE dIntervalStart = '{0}' AND cName = '{1}' AND cReportGroup = '{2}' AND chKey3 = '*' AND chKey4 = '*';</Value>
+    </Setting>
+    <Setting Name="UpdateIAgentQueueStatsNormal" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UPDATE dbo.IAgentQueueStats SET CustomValue1 = CustomValue1 + {3} WHERE dIntervalStart = '{0}' AND cName = '{1}' AND cReportGroup = '{2}' AND ((chKey3 &lt;&gt; '*' AND chKey4 = '*') OR (chKey3 &lt;&gt; '*' AND chKey4 = 'Call') OR (chKey3 = '*' AND chKey4 = '*'));</Value>
+    </Setting>
+    <Setting Name="SelectCallDetailCountSql" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT COUNT(*) FROM dbo.CallDetail WITH (NOLOCK) WHERE I3TimeStampGmt &gt;= @start AND I3TimeStampGmt &lt; @end</Value>
+    </Setting>
+    <Setting Name="DBTimeOut" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">300</Value>
+    </Setting>
+    <Setting Name="UpdateCommitCount" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

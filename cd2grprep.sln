@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cd2grprep", "cd2grprep\cd2grprep.csproj", "{B6F9B29E-988C-4163-8F66-778A7CC4C2F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6F9B29E-988C-4163-8F66-778A7CC4C2F0}.Debug|x86.ActiveCfg = Debug|x86
+		{B6F9B29E-988C-4163-8F66-778A7CC4C2F0}.Debug|x86.Build.0 = Debug|x86
+		{B6F9B29E-988C-4163-8F66-778A7CC4C2F0}.Release|x86.ActiveCfg = Release|x86
+		{B6F9B29E-988C-4163-8F66-778A7CC4C2F0}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+EndGlobal
